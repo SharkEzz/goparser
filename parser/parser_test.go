@@ -12,10 +12,11 @@ var parser = ps.Parser{}
 
 func TestAST(t *testing.T) {
 	const testProgram string = `
-		"oui";
-		42;
-		'non';
-		"blabla";
+		"oui"
+		42
+		'non'
+		
+		"blabla"
 	`
 
 	ast, err := parser.Parse(testProgram)

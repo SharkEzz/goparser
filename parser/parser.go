@@ -57,7 +57,6 @@ func (p *Parser) statements() []ast.Expression {
 func (p *Parser) generateExpression() ast.Expression {
 	expression := p.literal()
 
-	p.eat(";")
 	return ast.Expression{
 		Type:       "ExpressionStatement",
 		Expression: expression,

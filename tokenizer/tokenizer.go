@@ -11,7 +11,7 @@ var specs = [][2]string{
 	{`^"([^"]*)"`, "STRING"},
 	{`^'([^']*)'`, "STRING"},
 	{`^\s+`, ""},
-	{`^;`, ";"},
+	{`^\n+`, ""},
 }
 
 type Tokenizer struct {
@@ -41,16 +41,17 @@ func (t *Tokenizer) match(regexStr, str string) string {
 		return ""
 	}
 
-	matched := regex.FindAllString(str, -1)
+	matched := regex.FindString(str)
 	submatches := regex.FindStringSubmatch(str)
 
-	t.cursor += len(matched[0])
+	t.cursor += len(matched)
 
-	if len(submatches) > 1 {
+	if submatches != nil && len(submatches) > 1 {
+		// return the value in itself
 		return submatches[1]
 	}
 
-	return matched[0]
+	return matched
 }
 
 func (t *Tokenizer) GetNextToken() (*Token, error) {
