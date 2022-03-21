@@ -3,20 +3,9 @@ package parser
 import (
 	"fmt"
 	"regexp"
-	"strings"
 
-	"github.com/SharkEzz/goparser/parser/types/token"
+	"github.com/SharkEzz/goparser/parser/types/toknizer"
 )
-
-var specs = [][2]string{
-	{`^\d+`, "NUMBER"},
-	{`^"([^"]*)"`, "STRING"},
-	{`^'([^']*)'`, "STRING"},
-	{`^\s+`, ""},
-	{`^\n+`, ""},
-	{`^{`, "{"},
-	{`^}`, "}"},
-}
 
 type Tokenizer struct {
 	input  string
@@ -47,37 +36,36 @@ func (t *Tokenizer) match(regexStr, str string) string {
 	t.cursor += len(matched)
 
 	if len(submatches) > 1 {
-		// return the value in itself
+		// return the value in itself (omit quotes and so)
 		return submatches[1]
 	}
 
 	return matched
 }
 
-func (t *Tokenizer) GetNextToken() (*token.Token, error) {
+func (t *Tokenizer) GetNextToken() (*toknizer.Token, error) {
 	if !t.hasMoreTokens() {
 		return nil, fmt.Errorf("No more tokens to process")
 	}
 
-	strSlice := strings.Split(t.input, "")
-	str := strings.Join(strSlice[t.cursor:], "")
+	str := string(t.input[t.cursor:])
 
-	for _, spec := range specs {
-		tokenValue := t.match(spec[0], str)
+	for _, spec := range toknizer.Tokens {
+		tokenValue := t.match(spec.RegexStr, str)
 
 		if tokenValue == "" {
 			continue
 		}
 
-		if spec[1] == "" {
+		if spec.Name == "" {
 			return t.GetNextToken()
 		}
 
-		return &token.Token{
-			Type:  spec[1],
+		return &toknizer.Token{
+			Type:  spec.Name,
 			Value: tokenValue,
 		}, nil
 	}
 
-	return nil, fmt.Errorf(`Syntax error: unexpected "%s"`, str)
+	return nil, fmt.Errorf(`Syntax error: unexpected "%s" at position %d`, string(str[0]), t.cursor)
 }

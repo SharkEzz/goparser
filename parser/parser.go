@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/SharkEzz/goparser/parser/types/ast"
-	"github.com/SharkEzz/goparser/parser/types/token"
+	"github.com/SharkEzz/goparser/parser/types/toknizer"
 )
 
 type Parser struct {
 	tokenizer Tokenizer
-	lookahead *token.Token
+	lookahead *toknizer.Token
 }
 
 func (p *Parser) Parse(input string) (*ast.Program, error) {
@@ -28,7 +28,7 @@ func (p *Parser) Parse(input string) (*ast.Program, error) {
 	}, nil
 }
 
-func (p *Parser) eat(tokenType string) *token.Token {
+func (p *Parser) eat(tokenType string) *toknizer.Token {
 	token := p.lookahead
 
 	if token == nil {
@@ -95,13 +95,13 @@ func (p *Parser) literal() ast.Literal {
 		token := p.eat("NUMBER")
 		return ast.Literal{
 			Type:  "NumericExpression",
-			Value: token.Value.(string),
+			Value: token.Value,
 		}
 	case "STRING":
 		token := p.eat("STRING")
 		return ast.Literal{
 			Type:  "LiteralExpression",
-			Value: token.Value.(string),
+			Value: token.Value,
 		}
 	default:
 		panic(fmt.Errorf("Unexpected literal"))

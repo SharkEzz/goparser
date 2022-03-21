@@ -51,7 +51,7 @@ func TestString(t *testing.T) {
 	}
 }
 
-func TestLineBreak(t *testing.T) {
+func TestSpacesAndLineBreak(t *testing.T) {
 	const testData string = `
 		24
 				"test"
