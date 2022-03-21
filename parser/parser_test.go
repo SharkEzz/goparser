@@ -19,6 +19,9 @@ func TestAST(t *testing.T) {
 	`
 
 	ast, err := parser.Parse(testProgram)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if ast.Type != "PROGRAM" {
 		t.Errorf(`Invalid AST program type, expected "PROGRAM" but received "%s"`, ast.Type)
@@ -100,7 +103,10 @@ func TestInvalidBlock(t *testing.T) {
 	const testProgram string = `{
 	`
 
-	parser.Parse(testProgram)
+	_, err := parser.Parse(testProgram)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestNestedBlocks(t *testing.T) {

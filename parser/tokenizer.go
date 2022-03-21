@@ -23,10 +23,6 @@ type Tokenizer struct {
 	cursor int
 }
 
-func (t *Tokenizer) isEOF() bool {
-	return t.cursor == len(t.input)
-}
-
 func (t *Tokenizer) hasMoreTokens() bool {
 	return t.cursor < len(t.input)
 }
@@ -50,7 +46,7 @@ func (t *Tokenizer) match(regexStr, str string) string {
 
 	t.cursor += len(matched)
 
-	if submatches != nil && len(submatches) > 1 {
+	if len(submatches) > 1 {
 		// return the value in itself
 		return submatches[1]
 	}
