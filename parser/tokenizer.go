@@ -1,9 +1,11 @@
-package tokenizer
+package parser
 
 import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/SharkEzz/goparser/parser/types/token"
 )
 
 var specs = [][2]string{
@@ -12,6 +14,8 @@ var specs = [][2]string{
 	{`^'([^']*)'`, "STRING"},
 	{`^\s+`, ""},
 	{`^\n+`, ""},
+	{`^{`, "{"},
+	{`^}`, "}"},
 }
 
 type Tokenizer struct {
@@ -54,7 +58,7 @@ func (t *Tokenizer) match(regexStr, str string) string {
 	return matched
 }
 
-func (t *Tokenizer) GetNextToken() (*Token, error) {
+func (t *Tokenizer) GetNextToken() (*token.Token, error) {
 	if !t.hasMoreTokens() {
 		return nil, fmt.Errorf("No more tokens to process")
 	}
@@ -73,7 +77,7 @@ func (t *Tokenizer) GetNextToken() (*Token, error) {
 			return t.GetNextToken()
 		}
 
-		return &Token{
+		return &token.Token{
 			Type:  spec[1],
 			Value: tokenValue,
 		}, nil

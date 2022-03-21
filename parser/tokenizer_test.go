@@ -1,12 +1,12 @@
-package tokenizer_test
+package parser_test
 
 import (
 	"testing"
 
-	tk "github.com/SharkEzz/goparser/tokenizer"
+	ps "github.com/SharkEzz/goparser/parser"
 )
 
-var tokenizer = tk.Tokenizer{}
+var tokenizer = ps.Tokenizer{}
 
 func TestNumeric(t *testing.T) {
 	const testData string = "42"

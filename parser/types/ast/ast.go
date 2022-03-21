@@ -17,5 +17,5 @@ type Node struct {
 
 type Program struct {
 	Type string
-	Body []Expression
+	Body *[]Expression
 }

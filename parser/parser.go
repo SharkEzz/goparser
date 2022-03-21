@@ -3,13 +3,13 @@ package parser
 import (
 	"fmt"
 
-	"github.com/SharkEzz/goparser/parser/ast"
-	tk "github.com/SharkEzz/goparser/tokenizer"
+	"github.com/SharkEzz/goparser/parser/types/ast"
+	"github.com/SharkEzz/goparser/parser/types/token"
 )
 
 type Parser struct {
-	tokenizer tk.Tokenizer
-	lookahead *tk.Token
+	tokenizer Tokenizer
+	lookahead *token.Token
 }
 
 func (p *Parser) Parse(input string) (*ast.Program, error) {
@@ -24,11 +24,11 @@ func (p *Parser) Parse(input string) (*ast.Program, error) {
 
 	return &ast.Program{
 		Type: "PROGRAM",
-		Body: p.statements(),
+		Body: p.statementList(""),
 	}, nil
 }
 
-func (p *Parser) eat(tokenType string) *tk.Token {
+func (p *Parser) eat(tokenType string) *token.Token {
 	token := p.lookahead
 
 	if token == nil {
@@ -44,20 +44,46 @@ func (p *Parser) eat(tokenType string) *tk.Token {
 	return token
 }
 
-func (p *Parser) statements() []ast.Expression {
-	var nodes []ast.Expression
+func (p *Parser) statementList(stopLookAhead string) *[]ast.Expression {
+	nodes := []ast.Expression{*p.statement()}
 
-	for p.lookahead != nil {
-		nodes = append(nodes, p.generateExpression())
+	for p.lookahead != nil && p.lookahead.Type != stopLookAhead {
+		nodes = append(nodes, *p.statement())
 	}
 
-	return nodes
+	return &nodes
 }
 
-func (p *Parser) generateExpression() ast.Expression {
+func (p *Parser) statement() *ast.Expression {
+	switch p.lookahead.Type {
+	case "{":
+		return p.blockStatement()
+	default:
+		return p.expressionStatement()
+	}
+}
+
+func (p *Parser) blockStatement() *ast.Expression {
+	p.eat("{")
+
+	body := &[]ast.Expression{}
+
+	if p.lookahead != nil && p.lookahead.Type != "}" {
+		body = p.statementList("}")
+	}
+
+	p.eat("}")
+
+	return &ast.Expression{
+		Type:       "BlockStatement",
+		Expression: body,
+	}
+}
+
+func (p *Parser) expressionStatement() *ast.Expression {
 	expression := p.literal()
 
-	return ast.Expression{
+	return &ast.Expression{
 		Type:       "ExpressionStatement",
 		Expression: expression,
 	}
